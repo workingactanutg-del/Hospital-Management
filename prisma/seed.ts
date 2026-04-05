@@ -1,12 +1,18 @@
 // @ts-nocheck
-/* eslint-disable */
+const { Pool } = require("pg")
+
+const { PrismaPg } = require("@prisma/adapter-pg")
 const { PrismaClient } = require("@prisma/client")
-const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3")
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
+
+
+
 const bcrypt = require("bcryptjs")
 const { addDays, format, subDays } = require("date-fns")
 
-const adapter = new PrismaBetterSqlite3({ url: "file:./hosapp.db" })
-const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("🌱 Starting seed...")
