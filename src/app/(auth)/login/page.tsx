@@ -31,30 +31,33 @@ export default function LoginPage() {
     setLoading(true)
     setError("")
     try {
-      const result = await signIn("credentials", {
+      await signIn("credentials", {
         email: data.email,
         password: data.password,
         redirect: false,
       })
-      if (result?.error) {
+      // Always verify session — NextAuth v5 beta's result.error is unreliable
+      const sessionRes = await fetch("/api/auth/session")
+      const session = await sessionRes.json()
+      const userRole = session?.user?.role
+
+      if (!userRole) {
         setError("Invalid email or password. Please try again.")
-      } else {
-        toast.success("Welcome back!")
-        // Get the session to determine where to redirect
-        const sessionRes = await fetch("/api/auth/session")
-        const session = await sessionRes.json()
-        const userRole = session?.user?.role
-        if (userRole === "ADMIN") router.push("/admin/dashboard")
-        else if (userRole === "DOCTOR") router.push("/doctor/dashboard")
-        else router.push("/patient/dashboard")
-        router.refresh()
+        return
       }
+
+      toast.success("Welcome back!")
+      if (userRole === "ADMIN") router.push("/admin/dashboard")
+      else if (userRole === "DOCTOR") router.push("/doctor/dashboard")
+      else router.push("/patient/dashboard")
+      router.refresh()
     } catch {
       setError("Something went wrong. Please try again.")
     } finally {
       setLoading(false)
     }
   }
+
 
 
   const fillDemo = (r: string) => {
