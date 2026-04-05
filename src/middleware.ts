@@ -5,6 +5,7 @@ import { middlewareAuth } from "@/lib/auth-edge"
 export default middlewareAuth((req: NextRequest & { auth?: { user?: { role?: string } } | null }) => {
   const { pathname } = req.nextUrl
   const session = req.auth
+  console.log(`MIDDLEWARE [${pathname}] SESSION:`, session)
   const role = session?.user?.role
 
   // Public routes

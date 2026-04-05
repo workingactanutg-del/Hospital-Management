@@ -27,6 +27,7 @@ export const authConfig: NextAuthConfig = {
   session: {
     strategy: "jwt",
   },
+  useSecureCookies: process.env.NODE_ENV === "production",
   trustHost: true,
   secret: process.env.AUTH_SECRET,
 }
