@@ -40,7 +40,13 @@ export default function LoginPage() {
         setError("Invalid email or password. Please try again.")
       } else {
         toast.success("Welcome back!")
-        router.push("/")
+        // Get the session to determine where to redirect
+        const sessionRes = await fetch("/api/auth/session")
+        const session = await sessionRes.json()
+        const userRole = session?.user?.role
+        if (userRole === "ADMIN") router.push("/admin/dashboard")
+        else if (userRole === "DOCTOR") router.push("/doctor/dashboard")
+        else router.push("/patient/dashboard")
         router.refresh()
       }
     } catch {
@@ -49,6 +55,7 @@ export default function LoginPage() {
       setLoading(false)
     }
   }
+
 
   const fillDemo = (r: string) => {
     const demos: Record<string, { email: string; password: string }> = {

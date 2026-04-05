@@ -1,7 +1,7 @@
 async function testLogin() {
   console.log("Starting login test...");
   
-  const baseUrl = "http://127.0.0.1:3005";
+  const baseUrl = "http://127.0.0.1:3004";
 
   // 1. Get CSRF Token
   const csrfRes = await fetch(`${baseUrl}/api/auth/csrf`);
