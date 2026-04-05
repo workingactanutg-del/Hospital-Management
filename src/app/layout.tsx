@@ -17,7 +17,10 @@ const dmSans = DM_Sans({
   display: "swap",
 })
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
+
   title: {
     default: "HOSAPP — Hospital Management System",
     template: "%s | HOSAPP",
