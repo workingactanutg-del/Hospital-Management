@@ -19,23 +19,28 @@ export default middlewareAuth((req: NextRequest & { auth?: { user?: { role?: str
       return NextResponse.redirect(new URL("/login", req.url))
     }
 
-    // Role-based redirects
-    if (pathname.startsWith("/admin") && role !== "ADMIN") {
-      const dashboard = role === "DOCTOR" ? "/doctor/dashboard" : "/patient/dashboard"
-      return NextResponse.redirect(new URL(dashboard, req.url))
-    }
-    if (pathname.startsWith("/doctor") && role !== "DOCTOR") {
-      const dashboard = role === "ADMIN" ? "/admin/dashboard" : "/patient/dashboard"
-      return NextResponse.redirect(new URL(dashboard, req.url))
-    }
-    if (pathname.startsWith("/patient") && role !== "PATIENT") {
-      const dashboard = role === "ADMIN" ? "/admin/dashboard" : "/doctor/dashboard"
-      return NextResponse.redirect(new URL(dashboard, req.url))
+    // Direct, explicit role-to-dashboard mapping to avoid infinite loops
+    const correctDashboard = 
+      role === "ADMIN" ? "/admin/dashboard" : 
+      role === "DOCTOR" ? "/doctor/dashboard" : 
+      role === "PATIENT" ? "/patient/dashboard" : 
+      "/login"
+
+    // If the role is unexpected or the user is in the wrong dashboard, send them to the correct one
+    if (
+      (pathname.startsWith("/admin") && role !== "ADMIN") ||
+      (pathname.startsWith("/doctor") && role !== "DOCTOR") ||
+      (pathname.startsWith("/patient") && role !== "PATIENT") ||
+      (!["ADMIN", "DOCTOR", "PATIENT"].includes(role || ""))
+    ) {
+      return NextResponse.redirect(new URL(correctDashboard, req.url))
     }
   }
 
   return NextResponse.next()
 })
+
+
 
 export const config = {
   matcher: [
